@@ -8,9 +8,7 @@ import os
 import json
 from PIL import Image, ImageTk
 from ttkthemes import ThemedTk
-from ttkthemes import ThemedStyle
 
-# Check if the student data JSON file exists
 student_data_file = 'student_data.json'
 
 # Initialize students_data as an empty list
@@ -26,7 +24,6 @@ if os.path.exists(student_data_file):
             raise ValueError("Invalid data format in the JSON file")
 
     except (json.JSONDecodeError, ValueError) as e:
-        # Handle errors (e.g., empty file or invalid JSON format)
         messagebox.showwarning("Data Error", "Error loading student data. Initializing an empty "
                                              "data list.")
         students_data = []
@@ -62,10 +59,8 @@ def save_student_data():
     with open(student_data_file, 'w') as f:
         json.dump(students_data, f)
 
-
 # Create a set to keep track of recognized student names
 recognized_students = set()
-
 
 # Function to start the camera and perform facial recognition
 def start_camera():
@@ -76,19 +71,14 @@ def start_camera():
 
     while True:
         ret, frame = cap.read()
-
-        # Convert the frame to RGB format for face_recognition
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Find all face locations in the frame
         face_locations = face_recognition.face_locations(rgb_frame)
         face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
 
-        # Initialize a set to track currently recognized students in the current frame
         currently_recognized_students = set()
 
         for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-            # Loop through student data to check for matches
             for index, row in students_df.iterrows():
                 student_name = row['Student Name']
                 student_photo_path = row['Photo Path']
@@ -134,7 +124,6 @@ def start_camera():
         if cv2.waitKey(1) & 0xFF == 27:
             break
 
-    # Release the camera and close all OpenCV windows
     cap.release()
     cv2.destroyAllWindows()
 
@@ -149,10 +138,10 @@ def save_attendance():
         messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
 
-# Create the main window with the ThemedTk
+# Create the main window
 root = ThemedTk(theme="xpnative")
 root.title("Facial Recognition Attendance System")
-root.geometry("800x400")  # Adjust window size
+root.geometry("800x400")
 root.configure(bg="#E0E9FF")
 
 # Create a title label
@@ -160,11 +149,10 @@ title_label = tk.Label(root, text="Facial Recognition Attendance System",
                        font=("Times New Roman", 20), bg="#E0E9FF")
 title_label.pack(pady=20)
 
-# Create buttons with improved styling and use pack geometry manager
 add_student_button = ttk.Button(root, text="Add Student Data", command=add_student_data, width=20)
 add_student_button.pack(pady=20)
 
-camera_icon = Image.open("camera.png")  # Replace with the path to your icon image
+camera_icon = Image.open("camera.png")
 camera_icon = ImageTk.PhotoImage(camera_icon)
 camera_button = ttk.Button(root, text="Start Camera", image=camera_icon, command=start_camera)
 camera_button.pack(pady=20)
